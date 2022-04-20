@@ -211,6 +211,11 @@ class Window(QMainWindow,QWidget):
         self.setGeometry(10, 30, self.window_w, self.window_h)
 
         self.include_XPDFigure().setGeometry(*self.XPD_Figure_geo())
+        
+        ##
+        x,y = np.transpose(np.loadtxt(sys.argv[1], skiprows=1, usecols=(0,1)))
+        self.teste, = self.XPDax.plot(x, 50*y )
+        ##
         self.include_toolkit()
 
 
@@ -229,6 +234,8 @@ class Window(QMainWindow,QWidget):
         self.setWindowTitle("XPD - Qt version 0.5.1")
         
         self.update(ul=True, xpd = True, en = True)
+        
+        
         
         self.rescale()
         self.update_arrow()
@@ -1041,7 +1048,7 @@ class Window(QMainWindow,QWidget):
         label_opts = r'QLabel { background: ' + '{}'.format(bkg) + r'; border-radius: 3px;}'
         self.Info_label.setStyleSheet(label_opts)
         self.Info_label.setText(text)
-    
+
     def include_BaseAtoms(self):
         # just the name of the group
         self.BaseAtoms_groupBox = QGroupBox(names[version]['base'], self)
@@ -1353,7 +1360,7 @@ class Window(QMainWindow,QWidget):
         f = 'QCheckBox::indicator:checked:hover {width: 17px;height: 17px; border-radius: 3px; background-color: ' + '{}'.format(color)+';}'
         g = 'QCheckBox::indicator:checked:pressed {width: 17px;height: 17px; border-radius: 3px; background-color: #dddddd;}'
         return a + b + c + d + e + f + g
-        
+
     def getBaseAtom_color(self):
         color = QColorDialog.getColor().name()
         self.BaseAtoms_entry_0.setStyleSheet(self.LineEdit_StyleSheet(color))
@@ -1498,7 +1505,6 @@ class Window(QMainWindow,QWidget):
         else:
             s = 'h{}k{}l{}'.format(*hkl)
             if en_:
-                
                 atom = eval('xu.materials.elements.{}'.format(str(self.Atom_types[0])))
                 Fhkl = atom.f0(Q)+ atom.f1(en)+1j*atom.f2(en)
                 self.Fhkl.update({s:Fhkl})
@@ -1511,7 +1517,7 @@ class Window(QMainWindow,QWidget):
                     Fhkl = atom.f0(Q)+ atom.f1(en)+1j*atom.f2(en)
                     self.Fhkl.update({s:Fhkl})
             for i in range (self.additional_atoms):
-                 s2 = 'h{}k{}l{}i()'.format(*hkl,i)
+                 s2 = 'h{}k{}l{}i{}'.format(*hkl,i)
                  if en_:
                     atom = eval('xu.materials.elements.{}'.format(str(self.Atom_types[i+1])))
                     f = atom.f0(Q)+atom.f1(en)+1j*atom.f2(en)
