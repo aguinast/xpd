@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from PyQt5.QtCore import (Qt, pyqtSignal, QRect, QEvent)
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox, QTabWidget,QMainWindow, QMenu, QPushButton, QRadioButton, QVBoxLayout, 
@@ -20,8 +20,8 @@ import xrayutilities as xu
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 
-version = 'en'
-names = {'br':{'title':'Padr\u00e3o de Difra\u00e7\u00e3o de Raios X', 
+version = 'br'
+names = {'br':{'title':'Padr\u00e3o de Difra\u00e7\u00e3o de Raios X',
                 'pars': u'Par\u00e2metros de Rede (\u212b)', 
                 'wvl': 'Comprimento de Onda (\u212b) e Energia (keV)',
                 'size': 'Tamanho Te\u00f3rico de Cristalito (\u212b)', 
@@ -36,7 +36,7 @@ names = {'br':{'title':'Padr\u00e3o de Difra\u00e7\u00e3o de Raios X',
                 'xpd':'Padr\u00e3o de Difra\u00e7\u00e3o de Raios X', 
                 'lattpar': 'Par\u00e2metros da Rede',
                 'a': 'Par\u00e2metro "a"',  'b': 'Par\u00e2metro "b"', 'c': 'Par\u00e2metro "c"', 
-                'alpha': '\u0065ngulo entre os eixos definidos por "b" e "c"', 'beta': '\u0065ngulo entre os eixos definidos por "a" e "c"', 'gamma': '\u0065ngulo entre os eixos definidos por "a" e "b"', 
+                'alpha': '\u00e2ngulo entre os eixos definidos por "b" e "c"', 'beta': '\u00e2ngulo entre os eixos definidos por "a" e "c"', 'gamma': '\u00e2ngulo entre os eixos definidos por "a" e "b"', 
                 'complement_0': 'em \u212b', 
                 'complement_1': 'em graus', 
                 'problem_a': 'n\u00e3o \u00e9 um valor v\u00e1lido \npara',
@@ -97,7 +97,7 @@ fontsize = 11
 
 class DoubleSlider(QSlider):
 
-    # create our our signal that we can connect to if necessary
+    # create our signal that we can connect to if necessary
     doubleValueChanged = pyqtSignal(float)
 
     def __init__(self, decimals=3, *args, **kargs):
@@ -114,13 +114,13 @@ class DoubleSlider(QSlider):
         return float(super(DoubleSlider, self).value()) / self._multi
 
     def setMinimum(self, value):
-        return super(DoubleSlider, self).setMinimum(value * self._multi)
+        return super(DoubleSlider, self).setMinimum(int(value * self._multi))
 
     def setMaximum(self, value):
-        return super(DoubleSlider, self).setMaximum(value * self._multi)
+        return super(DoubleSlider, self).setMaximum(int(value * self._multi))
 
     def setSingleStep(self, value):
-        return super(DoubleSlider, self).setSingleStep(value * self._multi)
+        return super(DoubleSlider, self).setSingleStep(int(value * self._multi))
 
     def singleStep(self):
         return float(super(DoubleSlider, self).singleStep()) / self._multi
@@ -212,12 +212,20 @@ class Window(QMainWindow,QWidget):
 
         self.include_XPDFigure().setGeometry(*self.XPD_Figure_geo())
         
-        ##
-        x,y = np.transpose(np.loadtxt(sys.argv[1], skiprows=1, usecols=(0,1)))
-        self.teste, = self.XPDax.plot(x, 50*y )
-        ##
+        ## this is just to include a possibility to compare some x, y pxrd datafile, trying to remove the first lines
+        try:
+            if os.path.isfile(sys.argv[1]):
+                for i in range (10):
+                    try:
+                        x,y = np.transpose(np.loadtxt(sys.argv[1], skiprows=i, usecols=(0,1)))
+                        self.teste, = self.XPDax.plot(x, y)
+                        break
+                    except:
+                        pass
+        except:
+            pass
+        ##          
         self.include_toolkit()
-
 
         self.include_LatticeParams().setGeometry(*self.LatticeParams_geo())
 
@@ -231,7 +239,7 @@ class Window(QMainWindow,QWidget):
 
         self.include_BaseAtoms().setGeometry(*self.Atoms_geo())
 
-        self.setWindowTitle("XPD - Qt version 0.5.1")
+        self.setWindowTitle("PXRD - Qt version 1.0.0")
         
         self.update(ul=True, xpd = True, en = True)
         
@@ -806,6 +814,8 @@ class Window(QMainWindow,QWidget):
     def check_showhideatoms_TF(self):
         self.update(ul=False, xpd = False, en = False)
 
+
+
     def calc_HKL_planes(self):
         h = int(self.le_H.text())
         k = int(self.le_K.text())
@@ -1176,7 +1186,7 @@ class Window(QMainWindow,QWidget):
         self.AddAtoms_groupBox.update({i:QGroupBox('{} {}'.format(names[version]['atm'],i))})
         self.AddAtoms_groupBox[i].setFont(QFont(font,fontsize))
         self.AddAtoms_groupBox[i].setStyleSheet(self.GroupBox_StyleSheet(self.colors_0[i-1],'#dddddd'))
-        self.AddAtoms_groupBox[i].setMaximumHeight(self.layout[j].geometry().getRect()[3]/3)
+        self.AddAtoms_groupBox[i].setMaximumHeight(int(self.layout[j].geometry().getRect()[3]/3))
         self.layout[j].addWidget(self.AddAtoms_groupBox[i])
 
         self.AddAtoms_groupBox_layout.update({i:QGridLayout(self.AddAtoms_groupBox[i])})
@@ -1439,7 +1449,8 @@ class Window(QMainWindow,QWidget):
             z.append(res[2])
             colors.append(self.colors_0[i])
         if self.Atoms_check.isChecked(): self.scatter = self.Crystalax.scatter3D (x, y, z, color=colors, s = 300)
-        self.Crystalax.pbaspect = [1.0, 1.0, 1.0]
+        #self.Crystalax.pbaspect = [1.0, 1.0, 1.5]
+        self.Crystalax.set_box_aspect((1.0, 1.0, 1.0))
 
         self.Crystalax.set_xlim([-1,plotlimits])
         self.Crystalax.set_ylim([-1,plotlimits])
