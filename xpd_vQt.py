@@ -20,7 +20,7 @@ import xrayutilities as xu
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 
-version = 'br'
+version = 'en'
 names = {'br':{'title':'Padr\u00e3o de Difra\u00e7\u00e3o de Raios X',
                 'pars': u'Par\u00e2metros de Rede (\u212b)', 
                 'wvl': 'Comprimento de Onda (\u212b) e Energia (keV)',
