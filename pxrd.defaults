@@ -1,0 +1,45 @@
+# default values for pxrd
+# 2th range
+tth_min = 5
+tth_max = 65
+tth_step = 0.01
+# hkl max
+h_max = 6
+k_max = 6
+l_max = 6
+# energy
+E_ini = 8
+E_min = 4
+E_max = 20
+# crystal size
+CrysSize_ini = 500
+CrysSize_min = 15
+CrysSize_max = 1000
+# initial lattice parameters
+a_ini = 5.640
+b_ini = 5.640
+c_ini = 5.640
+alpha_ini = 90
+beta_ini = 90
+gamma_ini = 90
+# initial lattice parameters minimum
+a_min = 3.000
+b_min = 3.000
+c_min = 3.000
+alpha_min = 40
+beta_min = 40
+gamma_min = 40
+# initial lattice parameters maximum
+a_max = 13.000
+b_max = 13.000
+c_max = 13.000
+alpha_max = 150
+beta_max = 150
+gamma_max = 150
+# initial base atom
+atom_ini = Fe
+# initial language
+version = en
+# other options
+font_ini = Currier
+fontsize_ini = 11
